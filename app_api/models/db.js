@@ -3,8 +3,9 @@ var mongoose = require('mongoose');
 // Bağlantı adresi .env dosyasından gelir [cite: 870]
 var dbURI = process.env.MONGODB_URI;
 
-mongoose.connect(dbURI);
-
+mongoose.connect(dbURI, {
+    serverSelectionTimeoutMS: 5000 // 5 saniye içinde bağlanamazsa hata ver (sonsuza kadar dönmesin)
+}).catch(err => console.log("Bağlantı Hatası:", err));
 // Bağlantı olayları [cite: 83, 144]
 mongoose.connection.on('connected', function () {
     console.log('Mongoose ' + dbURI + ' adresindeki veritabanına bağlandı\n');

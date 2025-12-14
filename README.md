@@ -2,6 +2,9 @@
 
 Aşağıda, Vercel üzerinde çalışan API'ye yapılan isteklerin başarılı sonuçları yer almaktadır.
 
+https://mekanbul-backend-yigit.vercel.app/
+
+
 ### 1. Mekan İşlemleri
 **Yeni Mekan Ekleme (POST):**
 ![Mekan Ekleme](tests/AddVenue.png)
