@@ -1,0 +1,19 @@
+{
+	"info": {
+		"_postman_id": "1dcd2a14-f2b7-4f51-9bcb-45d23102e060",
+		"name": "Yigit_Bayraktar_MekanBul",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50804408",
+		"_collection_link": "https://bayraktaryigit0-367725.postman.co/workspace/4a0e7f4d-1434-48cb-8879-120606995890/collection/50804408-1dcd2a14-f2b7-4f51-9bcb-45d23102e060?action=share&source=collection_link&creator=50804408"
+	},
+	"item": [
+		{
+			"name": "Mekan Ekle",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

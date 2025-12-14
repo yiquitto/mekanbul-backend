@@ -1,0 +1,33 @@
+const database = 'mekanbul';
+use(database);
+
+db.venues.insertOne(
+  {
+    "name": "Starcups",
+    "address": "Centrum",
+    "rating": 3,
+    "foodanddrink": [
+      "çay",
+      "kahve",
+      "pasta"
+    ],
+    "coordinates": [
+      30.52851,
+      37.77543
+    ],
+    "hours": [
+      {
+        "days": "Pazartesi-Cuma",
+        "open": "9:00",
+        "close": "23:00",
+        "isClosed": false
+      },
+      {
+        "days": "Cumartesi-Pazar",
+        "open": "11:00",
+        "close": "17:00",
+        "isClosed": false
+      }
+    ]
+  }
+);
