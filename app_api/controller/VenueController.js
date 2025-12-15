@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 var Venue = mongoose.model('venue');
 
-// Cevap oluşturucu yardımcı fonksiyon [cite: 593]
+// Cevap oluşturucu yardımcı fonksiyon
 var createResponse = function (res, status, content) {
     res.status(status).json(content);
 };
 
-// Mesafe dönüştürücü (Hocanın özel kodu) 
+// Mesafe dönüştürücü (Hocanın özel kodu - DOKUNULMADI)
 var converter = (function () {
     var earthRadius = 6371; // km
     var radian2Kilometer = function (radian) {
@@ -21,7 +21,7 @@ var converter = (function () {
     };
 })();
 
-// Mekanları Listele (GeoSpatial) 
+// Mekanları Listele (GeoSpatial)
 var listVenues = async function (req, res) {
     var lat = parseFloat(req.query.lat);
     var long = parseFloat(req.query.long);
@@ -31,7 +31,9 @@ var listVenues = async function (req, res) {
         return;
     }
 
-    var point = { type: "Point", coordinates: [lat, long] };
+    // DÜZELTME BURADA: MongoDB [Boylam, Enlem] ister.
+    var point = { type: "Point", coordinates: [long, lat] }; 
+    
     var geoOptions = {
         distanceField: "dis",
         spherical: true,
@@ -65,12 +67,13 @@ var listVenues = async function (req, res) {
     }
 };
 
-// Yeni Mekan Ekle [cite: 744]
+// Yeni Mekan Ekle
 var addVenue = async function (req, res) {
     try {
         const venue = await Venue.create({
             ...req.body,
-            coordinates: [parseFloat(req.body.lat), parseFloat(req.body.long)],
+            // DÜZELTME BURADA: Kaydederken de [Boylam, Enlem] sırası olmalı
+            coordinates: [parseFloat(req.body.long), parseFloat(req.body.lat)],
             foodanddrink: req.body.foodanddrink ? req.body.foodanddrink.split(",") : []
         });
         createResponse(res, 201, venue);
@@ -79,7 +82,7 @@ var addVenue = async function (req, res) {
     }
 };
 
-// Tek Mekan Getir [cite: 650]
+// Tek Mekan Getir (AYNI)
 var getVenue = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).exec();
@@ -93,14 +96,15 @@ var getVenue = async function (req, res) {
     }
 };
 
-// Mekan Güncelle [cite: 799]
+// Mekan Güncelle
 var updateVenue = async function (req, res) {
     try {
         const updatedVenue = await Venue.findByIdAndUpdate(
             req.params.venueid,
             {
                 ...req.body,
-                coordinates: [parseFloat(req.body.lat), parseFloat(req.body.long)],
+                // DÜZELTME BURADA: Güncellerken de [Boylam, Enlem]
+                coordinates: [parseFloat(req.body.long), parseFloat(req.body.lat)],
                 foodanddrink: req.body.foodanddrink ? req.body.foodanddrink.split(",") : []
             },
             { new: true }
@@ -111,7 +115,7 @@ var updateVenue = async function (req, res) {
     }
 };
 
-// Mekan Sil [cite: 837]
+// Mekan Sil (AYNI)
 var deleteVenue = async function (req, res) {
     try {
         const venue = await Venue.findByIdAndDelete(req.params.venueid);
