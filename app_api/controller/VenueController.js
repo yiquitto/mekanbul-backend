@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 var Venue = mongoose.model('venue');
 
-// Cevap oluşturucu yardımcı fonksiyon
+// Yardımcı Fonksiyon: JSON Cevap Oluştur
 var createResponse = function (res, status, content) {
     res.status(status).json(content);
 };
 
-// Mesafe dönüştürücü (Hocanın özel kodu - DOKUNULMADI)
+// Yardımcı Fonksiyon: Mesafe Hesaplayıcı (Hocanın Kodu)
 var converter = (function () {
     var earthRadius = 6371; // km
     var radian2Kilometer = function (radian) {
@@ -21,23 +21,26 @@ var converter = (function () {
     };
 })();
 
-// Mekanları Listele (GeoSpatial)
+// 1. MEKANLARI LİSTELE (ListNearbyVenues)
 var listVenues = async function (req, res) {
     var lat = parseFloat(req.query.lat);
     var long = parseFloat(req.query.long);
 
+    // Koordinat kontrolü
     if (!lat || !long) {
-        createResponse(res, 404, { "status": "lat ve long parametreleri zorunludur" });
-        return;
+        return createResponse(res, 404, { "status": "enlem ve boylam zorunludur" });
     }
 
-    // DÜZELTME BURADA: MongoDB [Boylam, Enlem] ister.
-    var point = { type: "Point", coordinates: [long, lat] }; 
-    
+    // KRİTİK NOKTA: MongoDB sırası [Boylam, Enlem] şeklindedir!
+    var point = {
+        type: "Point",
+        coordinates: [long, lat]
+    };
+
     var geoOptions = {
         distanceField: "dis",
         spherical: true,
-        maxDistance: converter.radian2Kilometer(100) // 100km çapında
+        maxDistance: converter.radian2Kilometer(100) // 100km
     };
 
     try {
@@ -60,72 +63,87 @@ var listVenues = async function (req, res) {
                 id: venue._id
             };
         });
+
         createResponse(res, 200, venues);
 
     } catch (e) {
-        createResponse(res, 404, e);
+        // Hata nesnesini (e) doğrudan göndermek yerine mesajını gönderiyoruz
+        createResponse(res, 404, { "hata": e.message });
     }
 };
 
-// Yeni Mekan Ekle
+// 2. MEKAN EKLE (AddVenue)
 var addVenue = async function (req, res) {
     try {
         const venue = await Venue.create({
             ...req.body,
-            // DÜZELTME BURADA: Kaydederken de [Boylam, Enlem] sırası olmalı
-            coordinates: [parseFloat(req.body.long), parseFloat(req.body.lat)],
+            // Koordinatları sayıya çevir ve [Boylam, Enlem] sırasıyla kaydet
+            coordinates: [
+                parseFloat(req.body.long), 
+                parseFloat(req.body.lat)
+            ],
             foodanddrink: req.body.foodanddrink ? req.body.foodanddrink.split(",") : []
         });
         createResponse(res, 201, venue);
     } catch (error) {
-        createResponse(res, 400, error);
+        createResponse(res, 400, { "status": "Ekleme başarısız", "hata": error.message });
     }
 };
 
-// Tek Mekan Getir (AYNI)
+// 3. MEKAN GETİR (GetVenue)
 var getVenue = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).exec();
         if (!venue) {
-            createResponse(res, 404, { "status": "Böyle bir mekan yok" });
+            createResponse(res, 404, { "status": "Mekan bulunamadı" });
             return;
         }
         createResponse(res, 200, venue);
     } catch (error) {
-        createResponse(res, 404, { "status": "Böyle bir mekan yok" });
+        createResponse(res, 404, { "status": "Mekan bulunamadı", "hata": error.message });
     }
 };
 
-// Mekan Güncelle
+// 4. MEKAN GÜNCELLE (UpdateVenue)
 var updateVenue = async function (req, res) {
     try {
+        const updateData = { ...req.body };
+        // Eğer koordinat güncelleniyorsa sırayı düzelt
+        if (req.body.lat && req.body.long) {
+            updateData.coordinates = [parseFloat(req.body.long), parseFloat(req.body.lat)];
+        }
+        if (req.body.foodanddrink) {
+            updateData.foodanddrink = req.body.foodanddrink.split(",");
+        }
+
         const updatedVenue = await Venue.findByIdAndUpdate(
             req.params.venueid,
-            {
-                ...req.body,
-                // DÜZELTME BURADA: Güncellerken de [Boylam, Enlem]
-                coordinates: [parseFloat(req.body.long), parseFloat(req.body.lat)],
-                foodanddrink: req.body.foodanddrink ? req.body.foodanddrink.split(",") : []
-            },
+            updateData,
             { new: true }
         );
+        
+        if (!updatedVenue) {
+             createResponse(res, 404, {"status": "Mekan bulunamadı"});
+             return;
+        }
+
         createResponse(res, 200, updatedVenue);
     } catch (error) {
-        createResponse(res, 400, { "status": "Güncelleme başarısız", error });
+        createResponse(res, 400, { "status": "Güncelleme hatası", "hata": error.message });
     }
 };
 
-// Mekan Sil (AYNI)
+// 5. MEKAN SİL (DeleteVenue)
 var deleteVenue = async function (req, res) {
     try {
         const venue = await Venue.findByIdAndDelete(req.params.venueid);
         if (venue) {
             createResponse(res, 200, { "status": "Mekan silindi" });
         } else {
-            createResponse(res, 404, { "status": "Böyle bir mekan yok" });
+            createResponse(res, 404, { "status": "Mekan bulunamadı" });
         }
     } catch (error) {
-        createResponse(res, 404, { "status": "Silme hatası" });
+        createResponse(res, 404, { "status": "Silme hatası", "hata": error.message });
     }
 };
 

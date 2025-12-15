@@ -1,31 +1,31 @@
 var express = require('express');
 var router = express.Router();
 
-// Controller'ları çağır (Tekil klasör adına dikkat) [cite: 570]
-var ctrlVenues = require('../controller/VenueController');
-var ctrlComments = require('../controller/CommentController');
+// Controller'ları çağırıyoruz
+var ctrlVenues = require('../controllers/VenueController');
+var ctrlComments = require('../controllers/CommentController');
 
-// --- Mekan Rotaları ---
+// --- MEKAN ROTALARI ---
 router
-    .route('/venues')
-    .get(ctrlVenues.listVenues)
-    .post(ctrlVenues.addVenue);
-
-router
-    .route('/venues/:venueid')
-    .get(ctrlVenues.getVenue)
-    .put(ctrlVenues.updateVenue)
-    .delete(ctrlVenues.deleteVenue);
-
-// --- Yorum Rotaları ---
-router
-    .route('/venues/:venueid/comments')
-    .post(ctrlComments.addComment);
+  .route('/venues')
+  .get(ctrlVenues.listVenues)   // Mekanları Listele
+  .post(ctrlVenues.addVenue);   // Mekan Ekle
 
 router
-    .route('/venues/:venueid/comments/:commentid')
-    .get(ctrlComments.getComment)
-    .put(ctrlComments.updateComment)
-    .delete(ctrlComments.deleteComment);
+  .route('/venues/:venueid')
+  .get(ctrlVenues.getVenue)     // Tek Mekan Getir
+  .put(ctrlVenues.updateVenue)  // Mekan Güncelle
+  .delete(ctrlVenues.deleteVenue); // Mekan Sil
+
+// --- YORUM ROTALARI ---
+router
+  .route('/venues/:venueid/comments')
+  .post(ctrlComments.addComment); // Yorum Ekle
+
+router
+  .route('/venues/:venueid/comments/:commentid')
+  .get(ctrlComments.getComment)    // Yorum Getir
+  .put(ctrlComments.updateComment) // Yorum Güncelle
+  .delete(ctrlComments.deleteComment); // Yorum Sil
 
 module.exports = router;

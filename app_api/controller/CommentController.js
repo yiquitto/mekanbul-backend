@@ -5,131 +5,99 @@ var createResponse = function (res, status, content) {
     res.status(status).json(content);
 };
 
-// Son Puanı Hesapla (Manuel Döngü ile) 
-var calculateLastRating = function (incomingVenue, isDeleted) {
-    var i, numComments, avgRating, sumRating = 0;
-    
-    if (incomingVenue.comments && incomingVenue.comments.length > 0) {
-        numComments = incomingVenue.comments.length;
-        if (isDeleted && numComments === 0) {
-            avgRating = 0;
-        } else {
-            for (i = 0; i < numComments; i++) {
-                sumRating = sumRating + incomingVenue.comments[i].rating;
-            }
-            avgRating = Math.ceil(sumRating / numComments);
-        }
-        incomingVenue.rating = avgRating;
-        incomingVenue.save();
-    }
-};
-
-// Puanı Güncelle [cite: 769]
-var updateRating = function (venueid, isDeleted) {
-    Venue.findById(venueid)
-        .select('rating comments')
-        .exec()
-        .then(function (venue) {
-            if (venue) {
-                calculateLastRating(venue, isDeleted);
-            }
-        });
-};
-
-// Yorum Ekle [cite: 774, 779]
+// Yorum Ekle
 var addComment = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).select('comments');
-        if (!venue) {
+        if (venue) {
+            venue.comments.push({
+                author: req.body.author,
+                rating: req.body.rating,
+                text: req.body.text
+            });
+            const updatedVenue = await venue.save();
+            // Son eklenen yorumu döndür
+            const thisComment = updatedVenue.comments[updatedVenue.comments.length - 1];
+            createResponse(res, 201, thisComment);
+        } else {
             createResponse(res, 404, { "status": "Mekan bulunamadı" });
-            return;
         }
-        
-        venue.comments.push(req.body);
-        const savedVenue = await venue.save();
-        updateRating(savedVenue._id, false);
-        
-        const thisComment = savedVenue.comments[savedVenue.comments.length - 1];
-        createResponse(res, 201, thisComment);
-
-    } catch (error) {
-        createResponse(res, 400, { "status": "Yorum ekleme başarısız" });
+    } catch (err) {
+        createResponse(res, 400, err);
     }
 };
 
-// Yorum Getir [cite: 676]
+// Yorum Getir
 var getComment = async function (req, res) {
     try {
-        const venue = await Venue.findById(req.params.venueid).select('name comments');
+        const venue = await Venue.findById(req.params.venueid)
+            .select('name comments')
+            .exec();
+
         if (!venue) {
-            createResponse(res, 404, { "status": "Mekan bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Mekan bulunamadı" });
         }
-        
+
         const comment = venue.comments.id(req.params.commentid);
         if (!comment) {
-            createResponse(res, 404, { "status": "Yorum bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Yorum bulunamadı" });
         }
-        
-        const response = {
+
+        createResponse(res, 200, {
             venue: { name: venue.name, id: req.params.venueid },
             comment: comment
-        };
-        createResponse(res, 200, response);
+        });
 
-    } catch (error) {
-        createResponse(res, 404, { "status": "Hata oluştu" });
+    } catch (err) {
+        createResponse(res, 404, err);
     }
 };
 
-// Yorum Güncelle [cite: 819]
+// Yorum Güncelle
 var updateComment = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).select('comments');
         if (!venue) {
-            createResponse(res, 404, { "status": "Mekan bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Mekan bulunamadı" });
         }
         
         const comment = venue.comments.id(req.params.commentid);
         if (!comment) {
-            createResponse(res, 404, { "status": "Yorum bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Yorum bulunamadı" });
         }
-        
-        comment.set(req.body);
+
+        if (req.body.author) comment.author = req.body.author;
+        if (req.body.rating) comment.rating = req.body.rating;
+        if (req.body.text) comment.text = req.body.text;
+
         await venue.save();
-        updateRating(venue._id, false);
         createResponse(res, 200, comment);
 
-    } catch (error) {
-        createResponse(res, 400, { "status": "Güncelleme başarısız" });
+    } catch (err) {
+        createResponse(res, 400, err);
     }
 };
 
-// Yorum Sil [cite: 860]
+// Yorum Sil
 var deleteComment = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).select('comments');
         if (!venue) {
-            createResponse(res, 404, { "status": "Mekan bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Mekan bulunamadı" });
         }
-        
+
         const comment = venue.comments.id(req.params.commentid);
         if (!comment) {
-            createResponse(res, 404, { "status": "Yorum bulunamadı" });
-            return;
+            return createResponse(res, 404, { "status": "Yorum bulunamadı" });
         }
-        
-        comment.deleteOne();
+
+        // Mongoose alt döküman silme yöntemi
+        comment.deleteOne(); 
         await venue.save();
-        updateRating(venue._id, true);
         createResponse(res, 200, { "status": "Yorum silindi" });
 
-    } catch (error) {
-        createResponse(res, 400, { "status": "Silme başarısız" });
+    } catch (err) {
+        createResponse(res, 400, err);
     }
 };
 
