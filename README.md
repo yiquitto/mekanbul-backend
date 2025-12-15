@@ -1,5 +1,6 @@
-# MekanBul Backend API Projesi
+# MekanBul Backend 
 
+Demo: https://vercel.com/yigit-bs-projects/mekanbul-backend
 
 Bu proje, **"Web Teknolojileri ve Programlama"** dersi kapsamında geliştirilmiş; mekan verilerinin yönetildiği (CRUD) ve kullanıcıların bu mekanlara yorum yapabildiği RESTful bir API servisidir.
 
