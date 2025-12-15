@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 // Controller'ları çağırıyoruz
-var ctrlVenues = require('../controllers/VenueController');
-var ctrlComments = require('../controllers/CommentController');
+// 'controllers' yerine 'controller' yazdık (Sonundaki s harfini sildik)
+var ctrlVenues = require('../controller/VenueController');
+var ctrlComments = require('../controller/CommentController');
 
 // --- MEKAN ROTALARI ---
 router
