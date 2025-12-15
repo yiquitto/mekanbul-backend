@@ -1,21 +1,56 @@
-# MekanBul Backend 
+# MekanBul Backend
 
-Demo: https://vercel.com/yigit-bs-projects/mekanbul-backend
+**Demo:** [https://mekanbul-backend-git-main-yigit-bs-projects.vercel.app](https://mekanbul-backend-git-main-yigit-bs-projects.vercel.app)
 
 Bu proje, **"Web Teknolojileri ve Programlama"** dersi kapsamında geliştirilmiş; mekan verilerinin yönetildiği (CRUD) ve kullanıcıların bu mekanlara yorum yapabildiği RESTful bir API servisidir.
 
 **Geliştirici:** Yiğit Bayraktar
-**Ders:** Web Teknolojileri ve Programlama 
+**Ders:** Web Teknolojileri ve Programlama
 
 ---
 
 ## 🚀 Proje Özellikleri
 
-
 * **Teknolojiler:** Node.js, Express.js, MongoDB (Mongoose).
 * **Mimari:** MVC (Model-View-Controller) yapısına uygun REST API.
 * **Mekan Yönetimi:** Ekleme, Listeleme (Konuma göre), Güncelleme, Silme.
 * **Yorum Yönetimi:** Mekanlara bağlı alt döküman (Sub-document/Nested) olarak yorum ekleme ve yönetme.
+
+---
+
+## 🛠 Kurulum ve Çalıştırma
+
+Projeyi yerel ortamda test etmek için:
+
+1.  Repoyu klonlayın.
+2.  Gerekli paketleri yükleyin:
+    ```bash
+    npm install
+    ```
+3.  Projeyi başlatın:
+    ```bash
+    npm run start
+    # Veya nodemon ile:
+    nodemon app.js
+    ```
+
+---
+
+## 🔌 API Endpoints
+
+Projede kullanılan temel URL adresleri ve HTTP metodları aşağıdadır:
+
+| Metod | Endpoint URI | Açıklama |
+| :--- | :--- | :--- |
+| `GET` | `/api/venues` | Koordinatlara (enlem, boylam) göre yakındaki mekanları listeler. |
+| `POST` | `/api/venues` | Veritabanına yeni bir mekan ekler. |
+| `GET` | `/api/venues/:venueid` | ID'si verilen mekanın detaylarını getirir. |
+| `PUT` | `/api/venues/:venueid` | Mekan bilgilerini günceller. |
+| `DELETE` | `/api/venues/:venueid` | Mekanı siler. |
+| `POST` | `/api/venues/:venueid/comments` | Belirtilen mekana yorum ekler. |
+| `GET` | `/api/venues/:venueid/comments/:commentid` | Tek bir yorumu getirir. |
+| `PUT` | `/api/venues/:venueid/comments/:commentid` | Yorumu günceller. |
+| `DELETE` | `/api/venues/:venueid/comments/:commentid` | Yorumu siler. |
 
 ---
 
@@ -45,8 +80,6 @@ Mevcut mekanın bilgilerini günceller.
 Mekanı veritabanından kaldırır.
 ![Delete Venue](tests/DeleteVenue.png)
 
----
-
 ### 2. Yorum (Comment) İşlemleri
 
 **Yorum Ekleme (POST):**
@@ -64,21 +97,3 @@ Yapılan yorumun içeriğini veya puanını günceller.
 **Yorum Silme (DELETE):**
 Mekana ait yorumu siler.
 ![Delete Comment](tests/DeleteComment.png)
-
----
-
-## 🛠 Kurulum ve Çalıştırma
-
-Projeyi yerel ortamda test etmek için:
-
-1.  Repoyu klonlayın.
-2.  Gerekli paketleri yükleyin:
-    ```bash
-    npm install
-    ```
-3.  Projeyi başlatın:
-    ```bash
-    npm run start
-    # Veya nodemon ile:
-    nodemon app.js
-    ```
