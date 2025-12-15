@@ -3,8 +3,8 @@ var router = express.Router();
 
 // Controller'ları çağırıyoruz
 // 'controllers' yerine 'controller' yazdık (Sonundaki s harfini sildik)
-var ctrlVenues = require('../controller/VenueController');
-var ctrlComments = require('../controller/CommentController');
+var ctrlVenues = require('../api_controllers/VenueController');
+var ctrlComments = require('../api_controllers/CommentController');
 
 // --- MEKAN ROTALARI ---
 router
