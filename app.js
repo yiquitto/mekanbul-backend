@@ -4,44 +4,47 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-// Veritabanı bağlantısı (En üstte olmalı!)
+// veritabanı bağlantısını en başta yapıyoruz, uygulama açılınca bağlansın
 require('./app_api/models/db');
 
-// Rotaları çağır
+// api rotalarını tanımladığımız dosyayı buraya çağırdık
 var apiRouter = require('./app_api/routes/index');
 
 var app = express();
 
-// View engine setup (Backend projesi olduğu için şart değil ama kalsın)
+// backend projesi ama view engine ayarları kalsın, belki lazım olur
 app.set('views', path.join(__dirname, 'app_server', 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
+// konsolda gelen istekleri görmek için loglama
 app.use(express.json());
+// gelen json verilerini okuyabilmek için bu middleware şart
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Rotasını Kullan (/api)
+// /api ile başlayan istekleri apiRouter'a yönlendiriyoruz
 app.use('/api', apiRouter);
 
-// Ana sayfa için basit mesaj (Hata vermesin diye)
+// ana sayfa boş kalmasın diye basit bir mesaj döndük
 app.get('/', function(req, res) {
     res.send('MekanBul Backend Çalışıyor! /api/venues adresini kullanın.');
 });
 
-// 404 Hatası yakalama
+// eşleşen rota yoksa 404 hatası yakalıyoruz
 app.use(function(req, res, next) {
   next(createError(404));
+  // hata oluşturup bir sonraki adıma aktarıyoruz
 });
 
-// Hata işleyici
+// hata yakalama ve cevap dönme kısmı
 app.use(function(err, req, res, next) {
-  // Sadece development ortamında hatayı göster
+  // geliştirme ortamındaysak hatayı detaylı göster
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // Hata sayfasını render et (veya JSON dön)
+  // hata mesajını json olarak dönüyoruz
   res.status(err.status || 500);
   res.json({"error": err.message});
 });

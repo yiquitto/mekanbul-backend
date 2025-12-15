@@ -1,28 +1,83 @@
-## ✅ API Test Kanıtları (Postman)
-
-Aşağıda, Vercel üzerinde çalışan API'ye yapılan isteklerin başarılı sonuçları yer almaktadır.
-
-https://mekanbul-backend-yigit.vercel.app/
+# MekanBul Backend API Projesi
 
 
-### 1. Mekan İşlemleri
-**Yeni Mekan Ekleme (POST):**
-![Mekan Ekleme](tests/AddVenue.png)
+Bu proje, **"Web Teknolojileri ve Programlama"** dersi kapsamında geliştirilmiş; mekan verilerinin yönetildiği (CRUD) ve kullanıcıların bu mekanlara yorum yapabildiği RESTful bir API servisidir.
 
-**Mekanları Listeleme (GET):**
-![Mekan Listele](tests/ListVenues.png)
-
-**Mekan Güncelleme (PUT):**
-![Mekan Güncelle](tests/UpdateVenue.png)
-
-**Mekan Silme (DELETE):**
-![Mekan Sil](tests/DeleteVenue.png)
+**Geliştirici:** Yiğit Bayraktar
+**Ders:** Web Teknolojileri ve Programlama 
 
 ---
 
-### 2. Yorum İşlemleri
+## 🚀 Proje Özellikleri
+
+
+* **Teknolojiler:** Node.js, Express.js, MongoDB (Mongoose).
+* **Mimari:** MVC (Model-View-Controller) yapısına uygun REST API.
+* **Mekan Yönetimi:** Ekleme, Listeleme (Konuma göre), Güncelleme, Silme.
+* **Yorum Yönetimi:** Mekanlara bağlı alt döküman (Sub-document/Nested) olarak yorum ekleme ve yönetme.
+
+---
+
+## 🧪 API Test Sonuçları (Postman Ekran Görüntüleri)
+
+Proje kapsamında geliştirilen tüm endpoint'lerin Postman üzerindeki başarılı test sonuçları aşağıdadır. Ekran görüntüleri `tests` klasöründe yer almaktadır.
+
+### 1. Mekan (Venue) İşlemleri
+
+**Yakındaki Mekanları Listeleme (GET):**
+Enlem ve boylam parametrelerine göre mekanları listeler.
+![List Nearby Venues](tests/ListNearbyVenues.png)
+
+**Yeni Mekan Ekleme (POST):**
+Veritabanına yeni bir mekan kaydeder.
+![Add Venue](tests/AddVenue.png)
+
+**Mekan Detayı Getirme (GET - by ID):**
+ID'si verilen mekanın detaylarını getirir.
+![Get Venue by ID](tests/GetVenuebyID.png)
+
+**Mekan Güncelleme (PUT):**
+Mevcut mekanın bilgilerini günceller.
+![Update Venue](tests/UpdateVenue.png)
+
+**Mekan Silme (DELETE):**
+Mekanı veritabanından kaldırır.
+![Delete Venue](tests/DeleteVenue.png)
+
+---
+
+### 2. Yorum (Comment) İşlemleri
+
 **Yorum Ekleme (POST):**
-![Yorum Ekle](tests/AddComment.png)
+Belirli bir mekana yeni yorum ekler (Nested Resource).
+![Add Comment](tests/AddComment.png)
+
+**Tek Yorum Getirme (GET):**
+Hem Mekan ID hem Yorum ID kullanılarak spesifik bir yorumu getirir.
+![Get Comment](tests/GetComment.png)
+
+**Yorum Güncelleme (PUT):**
+Yapılan yorumun içeriğini veya puanını günceller.
+![Update Comment](tests/UpdateComment.png)
 
 **Yorum Silme (DELETE):**
-![Yorum Sil](tests/DeleteComment.png)
+Mekana ait yorumu siler.
+![Delete Comment](tests/DeleteComment.png)
+
+---
+
+## 🛠 Kurulum ve Çalıştırma
+
+Projeyi yerel ortamda test etmek için:
+
+1.  Repoyu klonlayın.
+2.  Gerekli paketleri yükleyin:
+    ```bash
+    npm install
+    ```
+3.  Projeyi başlatın:
+    ```bash
+    npm run start
+    # Veya nodemon ile:
+    nodemon app.js
+    ```

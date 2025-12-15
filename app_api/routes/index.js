@@ -1,32 +1,39 @@
 var express = require('express');
 var router = express.Router();
+// express router nesnesini başlattık
 
-// Controller'ları çağırıyoruz
-// 'controllers' yerine 'controller' yazdık (Sonundaki s harfini sildik)
+// controller dosyalarını buraya dahil ediyoruz
+// dosya isimlendirmesine dikkat, controller klasöründen alıyoruz
 var ctrlVenues = require('../api_controllers/VenueController');
 var ctrlComments = require('../api_controllers/CommentController');
 
-// --- MEKAN ROTALARI ---
+// --- mekanlarla ilgili rotalar ---
 router
   .route('/venues')
-  .get(ctrlVenues.listVenues)   // Mekanları Listele
-  .post(ctrlVenues.addVenue);   // Mekan Ekle
+  .get(ctrlVenues.listVenues)   // mekanları listeleme isteği
+  // get isteği gelince listeleme fonksiyonu çalışacak
+  .post(ctrlVenues.addVenue);   // yeni mekan ekleme isteği
+  // post ile yeni mekan ekliyoruz
 
 router
   .route('/venues/:venueid')
-  .get(ctrlVenues.getVenue)     // Tek Mekan Getir
-  .put(ctrlVenues.updateVenue)  // Mekan Güncelle
-  .delete(ctrlVenues.deleteVenue); // Mekan Sil
+  // id parametresi gelirse burası çalışıyor
+  .get(ctrlVenues.getVenue)     // tek bir mekanı getir
+  .put(ctrlVenues.updateVenue)  // mekanı güncelle
+  .delete(ctrlVenues.deleteVenue); // mekanı sil
 
-// --- YORUM ROTALARI ---
+// --- yorumlarla ilgili rotalar ---
 router
   .route('/venues/:venueid/comments')
-  .post(ctrlComments.addComment); // Yorum Ekle
+  .post(ctrlComments.addComment); // yorum ekleme
+  // yorum mekana bağlı olduğu için mekan id'si gerekiyor
 
 router
   .route('/venues/:venueid/comments/:commentid')
-  .get(ctrlComments.getComment)    // Yorum Getir
-  .put(ctrlComments.updateComment) // Yorum Güncelle
-  .delete(ctrlComments.deleteComment); // Yorum Sil
+  // spesifik yorum işlemleri için hem mekan hem yorum id'si lazım
+  .get(ctrlComments.getComment)    // yorumu getir
+  .put(ctrlComments.updateComment) // yorumu güncelle
+  .delete(ctrlComments.deleteComment); // yorumu sil
 
 module.exports = router;
+// app.js'de kullanmak için router'ı dışarı aktarıyoruz

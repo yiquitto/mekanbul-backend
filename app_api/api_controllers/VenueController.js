@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 var Venue = mongoose.model('venue');
 
-// Yardımcı Fonksiyon: JSON Cevap Oluştur
+// json cevap dönmek için yardımcı fonksiyon
 var createResponse = function (res, status, content) {
     res.status(status).json(content);
 };
 
-// Yardımcı Fonksiyon: Mesafe Hesaplayıcı (Hocanın Kodu)
+// mesafe hesaplama fonksiyonları, dersten aldık
 var converter = (function () {
     var earthRadius = 6371; // km
     var radian2Kilometer = function (radian) {
@@ -21,17 +21,17 @@ var converter = (function () {
     };
 })();
 
-// 1. MEKANLARI LİSTELE (ListNearbyVenues)
+// 1. mekanları listeleme controller'ı
 var listVenues = async function (req, res) {
     var lat = parseFloat(req.query.lat);
     var long = parseFloat(req.query.long);
 
-    // Koordinat kontrolü
+    // enlem boylam gelmiş mi kontrol ediyoruz
     if (!lat || !long) {
         return createResponse(res, 404, { "status": "enlem ve boylam zorunludur" });
     }
 
-    // KRİTİK NOKTA: MongoDB sırası [Boylam, Enlem] şeklindedir!
+    // dikkat: mongodb'de sıra önce boylam sonra enlem olmalı
     var point = {
         type: "Point",
         coordinates: [long, lat]
@@ -67,17 +67,17 @@ var listVenues = async function (req, res) {
         createResponse(res, 200, venues);
 
     } catch (e) {
-        // Hata nesnesini (e) doğrudan göndermek yerine mesajını gönderiyoruz
+        // hata olursa mesajını dönüyoruz
         createResponse(res, 404, { "hata": e.message });
     }
 };
 
-// 2. MEKAN EKLE (AddVenue)
+// 2. mekan ekleme controller'ı
 var addVenue = async function (req, res) {
     try {
         const venue = await Venue.create({
             ...req.body,
-            // Koordinatları sayıya çevir ve [Boylam, Enlem] sırasıyla kaydet
+            // koordinatları float'a çevirip diziye atıyoruz
             coordinates: [
                 parseFloat(req.body.long), 
                 parseFloat(req.body.lat)
@@ -90,7 +90,7 @@ var addVenue = async function (req, res) {
     }
 };
 
-// 3. MEKAN GETİR (GetVenue)
+// 3. tek mekan getirme controller'ı
 var getVenue = async function (req, res) {
     try {
         const venue = await Venue.findById(req.params.venueid).exec();
@@ -104,11 +104,11 @@ var getVenue = async function (req, res) {
     }
 };
 
-// 4. MEKAN GÜNCELLE (UpdateVenue)
+// 4. mekan güncelleme controller'ı
 var updateVenue = async function (req, res) {
     try {
         const updateData = { ...req.body };
-        // Eğer koordinat güncelleniyorsa sırayı düzelt
+        // koordinat değişirse formatı düzeltiyoruz
         if (req.body.lat && req.body.long) {
             updateData.coordinates = [parseFloat(req.body.long), parseFloat(req.body.lat)];
         }
@@ -133,7 +133,7 @@ var updateVenue = async function (req, res) {
     }
 };
 
-// 5. MEKAN SİL (DeleteVenue)
+// 5. mekan silme controller'ı
 var deleteVenue = async function (req, res) {
     try {
         const venue = await Venue.findByIdAndDelete(req.params.venueid);
